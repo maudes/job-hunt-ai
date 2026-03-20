@@ -1,4 +1,4 @@
-## Job Hunting AI Assistant
+## Job Hunting AI Assistant/ JobLens
 ### Purpose
 An automation tool built with FastAPI and LLM logic designed to streamline the job search process. This assistant eliminates tedious manual work by automatically extracting, analyzing, and prioritizing job opportunities.
 
