@@ -29,7 +29,7 @@ load_dotenv()
 
 CV_PATH     = Path(__file__).parent.parent / "data" / "cv.md"
 PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "analyzer_prompt.md"
-GEMINI_MODEL = "gemini-1.5-flash"
+GEMINI_MODEL = "gemini-2.5-flash"
 
 
 # ---------------------------------------------------------------------------

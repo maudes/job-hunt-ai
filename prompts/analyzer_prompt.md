@@ -8,6 +8,7 @@ The candidate has the following priorities:
 - Wants roles with long-term growth (3–5+ years potential)
 - Open to transitioning but values transferable skills
 - Values international exposure (global teams, overseas opportunities, or cross-border collaboration)
+- Currently employed (Nov 2025 – Present) at General Mobile — actively exploring better-aligned opportunities
 
 Analyze the provided CV and job description, then return a JSON object with exactly these keys:
 
