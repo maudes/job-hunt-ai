@@ -263,6 +263,40 @@ _FETCHERS = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# Job content validator
+# ---------------------------------------------------------------------------
+
+_JOB_SIGNALS = [
+    # English
+    "requirements", "responsibilities", "qualifications",
+    "experience", "skills", "benefits", "salary",
+    "apply", "position", "role", "team", "candidate",
+    "job", "hiring", "vacancy", "opportunity",
+    # Chinese
+    "工作內容", "條件", "職務", "薪資", "福利",
+    # German / Dutch (common in EU job boards)
+    "anforderungen", "aufgaben", "erfahrung",   # German: requirements, tasks, experience
+    "vereisten", "ervaring", "functie",          # Dutch: requirements, experience, role
+    # French
+    "expérience", "compétences", "poste",
+]
+
+NOT_A_JOB = "NOT_A_JOB"  # sentinel value checked by app.py
+
+
+def _is_job_content(text: str, from_platform_api: bool = False) -> bool:
+    """Return True if the text contains enough job-related signals.
+
+    Platform API responses are trusted more — threshold is lower (2 signals)
+    since their content may be in non-English languages not fully covered by
+    our signal list. Jina fallback content requires 3 signals.
+    """
+    text_lower = text.lower()
+    threshold = 2 if from_platform_api else 3
+    return sum(1 for s in _JOB_SIGNALS if s in text_lower) >= threshold
+
+
 def fetch_job_content(url: str) -> str | None:
     """
     Detect the job board from `url` and return cleaned plain-text job content
@@ -272,35 +306,52 @@ def fetch_job_content(url: str) -> str | None:
       1. Platform-specific API  (structured JSON, cleanest output)
       2. Jina Reader            (if API fails/empty — handles HTML stripping itself)
       3. None                   (both failed, caller should handle)
+
+    Returns:
+      - str        → job content
+      - NOT_A_JOB  → content fetched but not a job posting
+      - None       → fetch failed entirely
     """
     for fetcher, pattern in _FETCHERS:
         if pattern.search(url):
             result = fetcher(url)
             if result:
                 logger.success(f"[OK] {fetcher.__name__} returned {len(result)} chars")
+                if not _is_job_content(result, from_platform_api=True):
+                    logger.warning("[Validator] content fetched but does not appear to be a job posting")
+                    return NOT_A_JOB
                 return result
             # API matched but came back empty — try Jina before giving up
             logger.warning(f"{fetcher.__name__} matched but returned no content — trying Jina")
             jina_result = _fetch_via_jina(url)
             if jina_result:
                 logger.success(f"[OK] Jina fallback returned {len(jina_result)} chars")
+                if not _is_job_content(jina_result):
+                    logger.warning("[Validator] Jina content does not appear to be a job posting")
+                    return NOT_A_JOB
             else:
                 logger.error(f"Both {fetcher.__name__} and Jina failed for {url}")
             return jina_result
 
     # No platform regex matched — send straight to Jina
     logger.info(f"No platform matched for {url} — using Jina")
-    return _fetch_via_jina(url)
+    jina_result = _fetch_via_jina(url)
+    if jina_result:
+        if not _is_job_content(jina_result):
+            logger.warning("[Validator] Jina content does not appear to be a job posting")
+            return NOT_A_JOB
+    return jina_result
 
 if __name__ == "__main__":
-    test_url = "https://jobs.smartrecruiters.com/InterIKEAGroup/744000113104547-people-culture-generalist"
+    test_url = "https://www.google.com"
     result = fetch_job_content(test_url)
     print(result)
 
-# Test Results/ pass: 104, Ashby, greenhouse, workday, 
+# Test urls:
 #https://jobs.lever.co/magnetforensics/209745fb-3524-413a-9881-b491298f13c7
 #https://job-boards.greenhouse.io/greenhouse/jobs/7483085?gh_jid=7483085
 #https://jobs.ashbyhq.com/wemolo/a707846e-da49-4a1e-a3cf-88dc08dd334e
 #https://advantech.wd3.myworkdayjobs.com/zh-TW/External/job/Solution-Product-Manager---Smart-Healthcare--iWard---iService---_JR202603039?q=Product%20Manager
 #https://www.104.com.tw/job/8wywf
 #https://jobs.smartrecruiters.com/InterIKEAGroup/744000113104547-people-culture-generalist
+#https://www.google.com

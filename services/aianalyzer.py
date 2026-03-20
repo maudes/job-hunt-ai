@@ -6,6 +6,11 @@ Reads cv.md once at startup, then for each job URL:
   2. Sends CV + JD to Gemini with a structured prompt
   3. Returns a dict ready for updatesheet.py
 
+Install:
+    uv add google-genai python-dotenv
+
+.env:
+    GEMINI_API_KEY=your_key_here
 """
 
 import json
@@ -23,7 +28,7 @@ load_dotenv()
 # ---------------------------------------------------------------------------
 
 CV_PATH = Path(__file__).parent.parent / "data" / "cv.md"
-GEMINI_MODEL = "gemini-2.0-flash"  # free tier, fast
+GEMINI_MODEL = "gemini-2.5-flash"  # free tier, fast
 
 
 # ---------------------------------------------------------------------------
@@ -177,9 +182,9 @@ def analyze(jd_text: str, url: str) -> dict:
     dict with all analysis fields, plus 'original_url' injected.
     Raises ValueError if Gemini returns unparseable JSON.
     """
-    api_key = os.getenv("GEMINI_API_KEY")
+    api_key = os.getenv("GOOGLE_API_KEY")
     if not api_key:
-        raise EnvironmentError("GEMINI_API_KEY not set in .env")
+        raise EnvironmentError("GOOGLE_API_KEY not set in .env")
 
     client = genai.Client(api_key=api_key)
     prompt = _build_prompt(jd_text, url)
