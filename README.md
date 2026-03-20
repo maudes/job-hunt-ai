@@ -12,27 +12,33 @@ An automation tool built with FastAPI and LLM logic designed to streamline the j
 ### Project Structure
 ```
 .
-├── .env                          # GOOGLE_SHEET_ID, GOOGLE_APPLICATION_CREDENTIALS,
-│                                 # GOOGLE_API_KEY, JINA_API_KEY
-├── .env.example                  # template (commit this, not .env)
-├── .gitignore                    # .env, data/credentials.json, __pycache__, .venv
-├── pyproject.toml                # uv deps + pytest config
+├── .env                          # API keys and config (never commit)
+├── .env.example                  # Template — copy to .env and fill in
+├── .gitignore
+├── pyproject.toml                # Dependencies + pytest config
 ├── uv.lock
 ├── .python-version
 │
-├── app.py                        # Streamlit UI
-├── main.py                       # FastAPI routes (future)
+├── app.py                        # Streamlit UI — main entry point
+├── main.py                       # FastAPI routes (future API use)
 │
 ├── services/
-│   ├── read.py                   # fetch_job_content + NOT_A_JOB sentinel
-│   ├── aianalyzer.py             # Gemini analysis against CV
-│   └── updatesheet.py            # gspread writer
+│   ├── read.py                   # Fetches job content from any URL
+│   │                             # Supports: Greenhouse, Ashby, Lever,
+│   │                             # SmartRecruiters, Workday, 104.com.tw
+│   │                             # Falls back to Jina Reader for others
+│   ├── aianalyzer.py             # Gemini-powered CV vs JD analysis
+│   └── updatesheet.py            # Writes results to Google Sheets via gspread
+│
+├── prompts/
+│   └── analyzer_prompt.md        # System prompt for Gemini — edit to tune AI behaviour
+│                                 # Version header at top tracks iteration history
 │
 ├── data/
-│   ├── cv.md                     # your CV (never commit)
-│   └── credentials.json          # GCP service account (never commit)
+│   ├── cv.md                     # Your CV in markdown (never commit)
+│   └── credentials.json          # GCP service account key (never commit)
 │
 └── tests/
-    ├── test_read.py              # unit tests (mocked, fast)
-    └── test_read_integration.py  # integration tests (real network, run manually)
+    ├── test_read.py              # Unit tests — mocked, fast, run always
+    └── test_read_integration.py  # Integration tests — real network, run manually
 ```
