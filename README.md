@@ -24,8 +24,7 @@ An automation tool built with FastAPI and LLM logic designed to streamline the j
 │
 ├── services/
 │   ├── read.py                   # Fetches job content from any URL
-│   │                             # Supports: Greenhouse, Ashby, Lever,
-│   │                             # SmartRecruiters, Workday, 104.com.tw
+│   │                             # Supports: Greenhouse, Ashby, Lever, SmartRecruiters, Workday
 │   │                             # Falls back to Jina Reader for others
 │   ├── aianalyzer.py             # Gemini-powered CV vs JD analysis
 │   └── updatesheet.py            # Writes results to Google Sheets via gspread
