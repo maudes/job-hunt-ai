@@ -336,16 +336,43 @@ elif st.session_state.result:
     <br><br>
     """, unsafe_allow_html=True)
 
-    # Score bars
+    # Scores
     match_score     = r.get("match_score", 0)
     alignment_score = r.get("career_alignment", 0)
+
+    def _score_color(score):
+        if score >= 75: return "#16a34a"
+        if score >= 60: return "#2563eb"
+        if score >= 45: return "#d97706"
+        return "#dc2626"
+
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown(f"<div class='score-label'>Match Score</div>", unsafe_allow_html=True)
-        st.progress(match_score / 100, text=f"{match_score}%")
+        st.markdown(f"""
+        <div style='text-align:center; padding:1rem 0;'>
+            <div style='font-family:Syne; font-size:0.7rem; text-transform:uppercase;
+                        letter-spacing:0.12em; color:{T["text_muted"]}; margin-bottom:0.3rem;'>
+                Match Score
+            </div>
+            <div style='font-family:Syne; font-size:3rem; font-weight:700;
+                        color:{_score_color(match_score)}; line-height:1;'>
+                {match_score}<span style='font-size:1.2rem; color:{T["text_muted"]};'>%</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
     with col2:
-        st.markdown(f"<div class='score-label'>Career Alignment</div>", unsafe_allow_html=True)
-        st.progress(alignment_score / 100, text=f"{alignment_score}%")
+        st.markdown(f"""
+        <div style='text-align:center; padding:1rem 0;'>
+            <div style='font-family:Syne; font-size:0.7rem; text-transform:uppercase;
+                        letter-spacing:0.12em; color:{T["text_muted"]}; margin-bottom:0.3rem;'>
+                Career Alignment
+            </div>
+            <div style='font-family:Syne; font-size:3rem; font-weight:700;
+                        color:{_score_color(alignment_score)}; line-height:1;'>
+                {alignment_score}<span style='font-size:1.2rem; color:{T["text_muted"]};'>%</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -420,8 +447,6 @@ elif st.session_state.result:
                         company=r.get("company", ""),
                         title=r.get("job_title", ""),
                         location=r.get("location", ""),
-                        job_type=r.get("job_type", ""),
-                        status="Interested" if should_apply else "Reviewing",
                         verdict=r.get("apply_verdict", ""),
                         match_score=r.get("match_score", ""),
                         alignment=r.get("career_alignment", ""),

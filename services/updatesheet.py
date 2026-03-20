@@ -53,24 +53,22 @@ COLUMNS = [
     "Company",              # B
     "Title",                # C
     "Location",             # D
-    "Job Type",             # E
-    "Status",               # F
-    "Verdict",              # G
-    "Match Score",          # H
-    "Alignment",            # I
-    "Relocation",           # J
-    "Effort",               # K
-    "Description Summary",  # L
-    "Key Requirements",     # M
-    "Matching Points",      # N
-    "Gaps",                 # O
-    "Risk Flags",           # P
-    "Skills to Highlight",  # Q
-    "Quick CV Edits",       # R
-    "Strategic Value",      # S
-    "Holistic Explanation", # T
-    "Notes",                # U
-    "Date Added",           # V
+    "Verdict",              # E
+    "Match Score",          # E
+    "Alignment",            # F
+    "Relocation",           # G
+    "Effort",               # H
+    "Description Summary",  # I
+    "Key Requirements",     # J
+    "Matching Points",      # K
+    "Gaps",                 # L
+    "Risk Flags",           # M
+    "Skills to Highlight",  # N
+    "Quick CV Edits",       # O
+    "Strategic Value",      # P
+    "Holistic Explanation", # Q
+    "Notes",                # R
+    "Date Added",           # S
 ]
 
 
@@ -114,8 +112,6 @@ def upsert_job(
     company: str = "",
     title: str = "",
     location: str = "",
-    job_type: str = "",
-    status: str = "Interested",
     verdict: str = "",
     match_score: int | str = "",
     alignment: int | str = "",
@@ -147,8 +143,6 @@ def upsert_job(
         "Company":              company,
         "Title":                title,
         "Location":             location,
-        "Job Type":             job_type,
-        "Status":               status,
         "Verdict":              verdict,
         "Match Score":          match_score,
         "Alignment":            alignment,
@@ -177,7 +171,7 @@ def upsert_job(
 
         # Overwrite all AI-derived fields
         overwrite_fields = (
-            "Company", "Title", "Location", "Job Type", "Verdict",
+            "Company", "Title", "Location", "Verdict",
             "Match Score", "Alignment", "Relocation", "Effort",
             "Description Summary", "Key Requirements", "Matching Points",
             "Gaps", "Risk Flags", "Skills to Highlight", "Quick CV Edits",
@@ -186,10 +180,9 @@ def upsert_job(
         for field in overwrite_fields:
             current[col_map[field]] = str(row_data[field])
 
-        # Preserve manually-set fields if already filled
-        for field in ("Status", "Notes"):
-            if not current[col_map[field]]:
-                current[col_map[field]] = row_data[field]
+        # Preserve manually-set Notes if already filled
+        if not current[col_map["Notes"]]:
+            current[col_map["Notes"]] = row_data["Notes"]
 
         sheet.update(f"A{existing_row}", [current])
         logger.success(f"Updated row {existing_row} for {url}")
