@@ -1,3 +1,5 @@
+> **Superseded by [GoJob](https://github.com/maudes/gojob).** This repository is archived and no longer maintained. GoJob brings job matching, resume tuning, networking and interview prep into one page.
+
 ## Job Hunting AI Assistant/ JobLens
 ### Purpose
 An automation tool built with FastAPI and LLM logic designed to streamline the job search process. This assistant eliminates tedious manual work by automatically extracting, analyzing, and prioritizing job opportunities.
